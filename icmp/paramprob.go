@@ -6,7 +6,7 @@ package icmp
 
 import (
 	"encoding/binary"
-	"golang.org/x/net/internal/iana"
+	"github.com/chirayu/net/internal/iana"
 )
 
 // A ParamProb represents an ICMP parameter problem message body.

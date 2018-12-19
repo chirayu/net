@@ -9,7 +9,7 @@ package ipv4
 import (
 	"net"
 
-	"golang.org/x/net/internal/socket"
+	"github.com/chirayu/net/internal/socket"
 )
 
 func (c *packetHandler) readFrom(b []byte) (h *Header, p []byte, cm *ControlMessage, err error) {

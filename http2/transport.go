@@ -30,9 +30,9 @@ import (
 	"sync"
 	"time"
 
-	"golang.org/x/net/http/httpguts"
-	"golang.org/x/net/http2/hpack"
-	"golang.org/x/net/idna"
+	"github.com/chirayu/net/http/httpguts"
+	"github.com/chirayu/net/http2/hpack"
+	"github.com/chirayu/net/idna"
 )
 
 const (

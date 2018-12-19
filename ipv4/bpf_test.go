@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"golang.org/x/net/bpf"
-	"golang.org/x/net/ipv4"
+	"github.com/chirayu/net/bpf"
+	"github.com/chirayu/net/ipv4"
 )
 
 func TestBPF(t *testing.T) {

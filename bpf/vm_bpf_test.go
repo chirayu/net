@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"golang.org/x/net/bpf"
-	"golang.org/x/net/ipv4"
+	"github.com/chirayu/net/bpf"
+	"github.com/chirayu/net/ipv4"
 )
 
 // A virtualMachine is a BPF virtual machine which can process an

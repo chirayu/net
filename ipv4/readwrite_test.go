@@ -12,8 +12,8 @@ import (
 	"sync"
 	"testing"
 
-	"golang.org/x/net/internal/nettest"
-	"golang.org/x/net/ipv4"
+	"github.com/chirayu/net/internal/nettest"
+	"github.com/chirayu/net/ipv4"
 )
 
 func BenchmarkReadWriteUnicast(b *testing.B) {

@@ -12,7 +12,7 @@ import (
 	"strings"
 	"testing"
 
-	"golang.org/x/text/transform"
+	"github.com/chirayu/text/transform"
 )
 
 func transformString(t transform.Transformer, s string) (string, error) {

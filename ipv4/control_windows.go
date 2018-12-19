@@ -7,7 +7,7 @@ package ipv4
 import (
 	"syscall"
 
-	"golang.org/x/net/internal/socket"
+	"github.com/chirayu/net/internal/socket"
 )
 
 func setControlMessage(c *socket.Conn, opt *rawOpt, cf ControlFlags, on bool) error {

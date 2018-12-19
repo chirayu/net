@@ -4,8 +4,8 @@ This repository holds supplementary Go networking libraries.
 
 ## Download/Install
 
-The easiest way to install is to run `go get -u golang.org/x/net`. You can
-also manually git clone the repository to `$GOPATH/src/golang.org/x/net`.
+The easiest way to install is to run `go get -u github.com/chirayu/net`. You can
+also manually git clone the repository to `$GOPATH/src/github.com/chirayu/net`.
 
 ## Report Issues / Send Patches
 

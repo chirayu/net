@@ -29,25 +29,25 @@ ENV REV=034d17a462f7b2dcd1a4a73553ec5357ff6e6c6e
 RUN go get -d go4.org/syncutil/singleflight &&\
     (cd /go/src/go4.org && (git cat-file -t $REV 2>/dev/null || git fetch -q origin $REV) && git reset --hard $REV)
 
-# Repo golang.org/x/build at 8aa9ee0 (2018-02-01)
+# Repo github.com/chirayu/build at 8aa9ee0 (2018-02-01)
 ENV REV=8aa9ee0e557fd49c14113e5ba106e13a5b455460
-RUN go get -d golang.org/x/build/autocertcache &&\
-    (cd /go/src/golang.org/x/build && (git cat-file -t $REV 2>/dev/null || git fetch -q origin $REV) && git reset --hard $REV)
+RUN go get -d github.com/chirayu/build/autocertcache &&\
+    (cd /go/src/github.com/chirayu/build && (git cat-file -t $REV 2>/dev/null || git fetch -q origin $REV) && git reset --hard $REV)
 
-# Repo golang.org/x/crypto at 1875d0a (2018-01-27)
+# Repo github.com/chirayu/crypto at 1875d0a (2018-01-27)
 ENV REV=1875d0a70c90e57f11972aefd42276df65e895b9
-RUN go get -d golang.org/x/crypto/acme `#and 2 other pkgs` &&\
-    (cd /go/src/golang.org/x/crypto && (git cat-file -t $REV 2>/dev/null || git fetch -q origin $REV) && git reset --hard $REV)
+RUN go get -d github.com/chirayu/crypto/acme `#and 2 other pkgs` &&\
+    (cd /go/src/github.com/chirayu/crypto && (git cat-file -t $REV 2>/dev/null || git fetch -q origin $REV) && git reset --hard $REV)
 
-# Repo golang.org/x/oauth2 at 30785a2 (2018-01-04)
+# Repo github.com/chirayu/oauth2 at 30785a2 (2018-01-04)
 ENV REV=30785a2c434e431ef7c507b54617d6a951d5f2b4
-RUN go get -d golang.org/x/oauth2 `#and 5 other pkgs` &&\
-    (cd /go/src/golang.org/x/oauth2 && (git cat-file -t $REV 2>/dev/null || git fetch -q origin $REV) && git reset --hard $REV)
+RUN go get -d github.com/chirayu/oauth2 `#and 5 other pkgs` &&\
+    (cd /go/src/github.com/chirayu/oauth2 && (git cat-file -t $REV 2>/dev/null || git fetch -q origin $REV) && git reset --hard $REV)
 
-# Repo golang.org/x/text at e19ae14 (2017-12-27)
+# Repo github.com/chirayu/text at e19ae14 (2017-12-27)
 ENV REV=e19ae1496984b1c655b8044a65c0300a3c878dd3
-RUN go get -d golang.org/x/text/secure/bidirule `#and 4 other pkgs` &&\
-    (cd /go/src/golang.org/x/text && (git cat-file -t $REV 2>/dev/null || git fetch -q origin $REV) && git reset --hard $REV)
+RUN go get -d github.com/chirayu/text/secure/bidirule `#and 4 other pkgs` &&\
+    (cd /go/src/github.com/chirayu/text && (git cat-file -t $REV 2>/dev/null || git fetch -q origin $REV) && git reset --hard $REV)
 
 # Repo google.golang.org/api at 7d0e2d3 (2018-01-30)
 ENV REV=7d0e2d350555821bef5a5b8aecf0d12cc1def633
@@ -79,18 +79,18 @@ RUN go install cloud.google.com/go/compute/metadata \
 	github.com/golang/protobuf/ptypes/timestamp \
 	github.com/googleapis/gax-go \
 	go4.org/syncutil/singleflight \
-	golang.org/x/build/autocertcache \
-	golang.org/x/crypto/acme \
-	golang.org/x/crypto/acme/autocert \
-	golang.org/x/oauth2 \
-	golang.org/x/oauth2/google \
-	golang.org/x/oauth2/internal \
-	golang.org/x/oauth2/jws \
-	golang.org/x/oauth2/jwt \
-	golang.org/x/text/secure/bidirule \
-	golang.org/x/text/transform \
-	golang.org/x/text/unicode/bidi \
-	golang.org/x/text/unicode/norm \
+	github.com/chirayu/build/autocertcache \
+	github.com/chirayu/crypto/acme \
+	github.com/chirayu/crypto/acme/autocert \
+	github.com/chirayu/oauth2 \
+	github.com/chirayu/oauth2/google \
+	github.com/chirayu/oauth2/internal \
+	github.com/chirayu/oauth2/jws \
+	github.com/chirayu/oauth2/jwt \
+	github.com/chirayu/text/secure/bidirule \
+	github.com/chirayu/text/transform \
+	github.com/chirayu/text/unicode/bidi \
+	github.com/chirayu/text/unicode/norm \
 	google.golang.org/api/gensupport \
 	google.golang.org/api/googleapi \
 	google.golang.org/api/googleapi/internal/uritemplates \
@@ -128,7 +128,7 @@ RUN go install cloud.google.com/go/compute/metadata \
 	google.golang.org/grpc/transport
 # END deps
 
-COPY . /go/src/golang.org/x/net/
+COPY . /go/src/github.com/chirayu/net/
 
-RUN go install -tags "h2demo netgo" -ldflags "-linkmode=external -extldflags '-static -pthread'" golang.org/x/net/http2/h2demo
+RUN go install -tags "h2demo netgo" -ldflags "-linkmode=external -extldflags '-static -pthread'" github.com/chirayu/net/http2/h2demo
 

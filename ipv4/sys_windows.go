@@ -5,8 +5,8 @@
 package ipv4
 
 import (
-	"golang.org/x/net/internal/iana"
-	"golang.org/x/net/internal/socket"
+	"github.com/chirayu/net/internal/iana"
+	"github.com/chirayu/net/internal/socket"
 )
 
 const (
