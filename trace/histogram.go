@@ -33,13 +33,19 @@ type histogram struct {
 }
 
 // AddMeasurement records a value measurement observation to the histogram.
+// the value comes in nano seconds
 func (h *histogram) addMeasurement(value int64) {
 	// TODO: assert invariant
 	h.sum += value
 	h.sumOfSquares += float64(value) * float64(value)
 
+	// Buckets are spaced out in powers of 2. A log2 of the value (with a ceiling ob bucketCount) gives the bucket
 	bucketIndex := getBucket(value)
 
+	// neat optimisation. Assign to value, valueCount till a newbucketIndex is received. After that move the value to
+	// relevant bucket as part of allocateBuckets
+	// note : the first value, valueCount is moved to buckets as part of allocateBuckets. the following one stays and
+	// never moves.
 	if h.valueCount == 0 || (h.valueCount > 0 && h.value == bucketIndex) {
 		h.value = bucketIndex
 		h.valueCount++
@@ -48,7 +54,7 @@ func (h *histogram) addMeasurement(value int64) {
 		h.buckets[bucketIndex]++
 	}
 }
-
+// allocateBuckets, allocates the buckets and moves the value and valueCount to the relevant bucket
 func (h *histogram) allocateBuckets() {
 	if h.buckets == nil {
 		h.buckets = make([]int64, bucketCount)
@@ -107,6 +113,7 @@ func (h *histogram) variance() float64 {
 		return 0
 	}
 	s := float64(h.sum) / t
+	// This is the standard formula. Wikipedia for details : https://en.wikipedia.org/wiki/Variance
 	return h.sumOfSquares/t - s*s
 }
 
@@ -115,7 +122,7 @@ func (h *histogram) standardDeviation() float64 {
 	return math.Sqrt(h.variance())
 }
 
-// PercentileBoundary estimates the value that the given fraction of recorded
+// PercentileBoundary **estimates** the value that the given fraction of recorded
 // observations are less than.
 func (h *histogram) percentileBoundary(percentile float64) int64 {
 	total := h.total()

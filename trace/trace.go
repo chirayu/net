@@ -361,17 +361,21 @@ func New(family, title string) Trace {
 	tr.events = tr.eventsBuf[:0]
 
 	activeMu.RLock()
+
+	// activeTraces is a global variable storing traces for each family in a traceSet.
+	// traceSet as the name indicates is a set to prevent duplicate insertion.
 	s := activeTraces[tr.Family]
 	activeMu.RUnlock()
 	if s == nil {
 		activeMu.Lock()
 		s = activeTraces[tr.Family] // check again
 		if s == nil {
-			s = new(traceSet)
+			s = new(traceSet) // at this point the map in the traceset is still null. Why?
 			activeTraces[tr.Family] = s
 		}
 		activeMu.Unlock()
 	}
+
 	s.Add(tr)
 
 	// Trigger allocation of the completed trace structure for this family.
@@ -394,16 +398,26 @@ func (tr *trace) Finish() {
 	tr.Elapsed = elapsed
 	tr.mu.Unlock()
 
+	// Record the stack after finish if DebugUseAfterFinish is set
 	if DebugUseAfterFinish {
 		buf := make([]byte, 4<<10) // 4 KB should be enough
 		n := runtime.Stack(buf, false)
 		tr.finishStack = buf[:n]
 	}
 
+	// Remove the trace from the traceSet of this family
 	activeMu.RLock()
 	m := activeTraces[tr.Family]
 	activeMu.RUnlock()
 	m.Remove(tr)
+
+	// **Move the trace to completed traces.**
+	// Completed traces are are organised by family.
+	// The family (return value) keeps buckets for each duration. The buckets in turn keep a circular list to hold the
+	// traces.  The trace is added to *all* matching buckets. A matching bucket is one which has its time less than the
+	// trace's elapsed time.
+	// Example:  Three are buckets (1s, 10s, and 20s). A trace with elapsed time 15s will be added to the first and
+	// second bucket
 
 	f := getFamily(tr.Family, true)
 	tr.mu.RLock() // protects tr fields in Cond.match calls
@@ -461,6 +475,7 @@ func (ts *traceSet) Len() int {
 
 func (ts *traceSet) Add(tr *trace) {
 	ts.mu.Lock()
+	// Add always has to check if the map is null. Assuming that initialisation will make one should be ok. Isn't it?
 	if ts.m == nil {
 		ts.m = make(map[*trace]bool)
 	}
@@ -487,6 +502,7 @@ func (ts *traceSet) FirstN(n int) traceList {
 	// Fast path for when no selectivity is needed.
 	if n == len(ts.m) {
 		for tr := range ts.m {
+			// Increment a ref whenever the trace pointer is removed
 			tr.ref()
 			trl = append(trl, tr)
 		}
@@ -613,6 +629,8 @@ func (b *traceBucket) Add(tr *trace) {
 	if b.length < tracesPerBucket {
 		b.length++
 	}
+
+	// Add a ref every time the trace is added somewhere
 	tr.ref()
 }
 
@@ -652,6 +670,8 @@ type cond interface {
 	String() string
 }
 
+// As a golang newbie this pattern of defining the minCond as a type as opposed to a struct with one field doesn't come
+// naturally to me.
 type minCond time.Duration
 
 func (m minCond) match(t *trace) bool { return t.Elapsed >= time.Duration(m) }
@@ -662,6 +682,7 @@ type errorCond struct{}
 func (e errorCond) match(t *trace) bool { return t.IsError }
 func (e errorCond) String() string      { return "errors" }
 
+// tracelist is a sortable array of traces. It implements the sort.Interface
 type traceList []*trace
 
 // Free calls unref on each element of the list.
@@ -680,7 +701,11 @@ func (trl traceList) Swap(i, j int)      { trl[i], trl[j] = trl[j], trl[i] }
 type event struct {
 	When       time.Time
 	Elapsed    time.Duration // since previous event in trace
+
+	// This is quite clever. With NewDay, only the first event of a day will show the date, the remaining will be
+	// displayed as time.
 	NewDay     bool          // whether this event is on a different day to the previous event
+
 	Recyclable bool          // whether this event was passed via LazyLog
 	Sensitive  bool          // whether this event contains sensitive information
 	What       interface{}   // string or fmt.Stringer
